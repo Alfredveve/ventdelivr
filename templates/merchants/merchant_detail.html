@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="bg-white">
+  <!-- Merchant Header -->
+  <div class="relative bg-african-green pb-32">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-10 pb-12">
+        <h1 class="text-4xl font-bold tracking-tight text-white">{{ merchant.store_name }}</h1>
+        <p class="mt-2 text-lg text-gray-200">{{ merchant.description }}</p>
+    </div>
+  </div>
+
+  <main class="-mt-32 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+      <!-- Products by Category -->
+      {% for category in categories %}
+      <div class="bg-white rounded-lg shadow mt-8 p-6">
+          <h2 class="text-2xl font-bold tracking-tight text-gray-900 border-b pb-4 mb-6">{{ category.name }}</h2>
+          <div class="grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+              {% for product in merchant.products.all %}
+                {% if product.category == category %}
+                  <div class="group relative">
+                      <div class="min-h-80 aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200 group-hover:opacity-75 lg:aspect-none lg:h-80">
+                          {% if product.image %}
+                          <img src="{{ product.image.url }}" alt="{{ product.name }}" class="h-full w-full object-cover object-center lg:h-full lg:w-full">
+                          {% else %}
+                          <div class="h-full w-full flex items-center justify-center bg-gray-100 text-gray-500">No Image</div>
+                          {% endif %}
+                      </div>
+                      <div class="mt-4 flex justify-between">
+                          <div>
+                              <h3 class="text-sm text-gray-700">
+                                  <a href="{% url 'catalog:product_detail' product.slug %}">
+                                      <span aria-hidden="true" class="absolute inset-0"></span>
+                                      {{ product.name }}
+                                  </a>
+                              </h3>
+                          </div>
+                          <p class="text-sm font-medium text-gray-900">${{ product.price }}</p>
+                      </div>
+                  </div>
+                {% endif %}
+              {% endfor %}
+          </div>
+      </div>
+      {% endfor %}
+  </main>
+</div>
+{% endblock %}
