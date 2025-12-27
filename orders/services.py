@@ -79,9 +79,8 @@ class OrderService:
         if order.status != Order.Status.PENDING:
             raise ValidationError(f"La commande #{order.id} ne peut pas être payée (statut actuel: {order.status}).")
 
-        # Tentative de paiement via le service finance
-        wallet = order.customer.wallet
-        FinanceService.process_payment(wallet, order.total_price, order)
+        # Paiement via le service finance robuste
+        FinanceService.process_order_payment(order)
         
         # Mise à jour du statut
         order.status = Order.Status.PAID
@@ -104,9 +103,13 @@ class OrderService:
         for item in order.items.all():
             InventoryService.adjust_stock(item.product, item.quantity)
 
-        # 2. Rembourser si payé (Optionnel selon business logic, ici on simplifie)
+        # 2. Rembourser si payé
         if order.status == Order.Status.PAID:
-            FinanceService.deposit_funds(order.customer.wallet, order.total_price)
+            FinanceService.deposit_funds(
+                order.customer.wallet, 
+                order.total_price, 
+                description=f"Remboursement commande #{order.id}"
+            )
 
         # 3. Changer le statut
         order.status = Order.Status.CANCELLED

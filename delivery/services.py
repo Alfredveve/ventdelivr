@@ -109,6 +109,10 @@ class DeliveryService:
         order.status = Order.Status.DELIVERED
         order.save()
         
+        # Déclenchement du versement au marchand (Logique financière)
+        from finance.services import FinanceService
+        FinanceService.settle_merchant_payout(order)
+        
         return delivery
 
     @staticmethod
