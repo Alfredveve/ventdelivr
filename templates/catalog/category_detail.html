@@ -76,7 +76,7 @@
             <div class="p-8 flex flex-col flex-1">
                 <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">{{ product.merchant.store_name }}</p>
                 <h3 class="text-xl font-black text-african-green mb-4 leading-tight min-h-[3.5rem] line-clamp-2">
-                    <a href="{% url 'catalog:product_detail' product.id %}">
+                    <a href="{% url 'catalog:product_detail' product.slug %}">
                         <span class="absolute inset-x-0 top-0 h-[80%]"></span>
                         {{ product.name }}
                     </a>

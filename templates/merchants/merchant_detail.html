@@ -1,22 +1,16 @@
 {% extends 'base.html' %}
-{% block content %}
-<div class="bg-white">
-  <!-- Merchant Header -->
-  <div class="relative bg-african-green pb-32">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-10 pb-12">
-        <h1 class="text-4xl font-bold tracking-tight text-white">{{ merchant.store_name }}</h1>
-        <p class="mt-2 text-lg text-gray-200">{{ merchant.description }}</p>
-    </div>
-  </div>
+{% load static %}
 
-  <main class="-mt-32 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-      <!-- Products by Category -->
-      {% for category in categories %}
+{% block title %}{{ merchant.store_name }} - VentDelivr{% endblock %}
+
+{% block content %}
 <div class="min-h-screen bg-white">
     <!-- Merchant Hero -->
     <div class="relative h-64 sm:h-80 md:h-96 overflow-hidden">
         <div class="absolute inset-0 bg-african-green">
-            {% if merchant.logo %}
+            {% if merchant.banner_image %}
+                <img src="{{ merchant.banner_image.url }}" class="w-full h-full object-cover blur-sm opacity-30 shadow-inner" alt="{{ merchant.store_name }} Banner">
+            {% elif merchant.logo %}
                 <img src="{{ merchant.logo.url }}" class="w-full h-full object-cover blur-sm opacity-30 shadow-inner" alt="{{ merchant.store_name }} Banner">
             {% endif %}
             <div class="absolute inset-0 bg-gradient-to-b from-transparent via-african-green/40 to-african-green"></div>
@@ -40,8 +34,8 @@
                             Verified Seller
                         </span>
                         <span>•</span>
-                        <span>{{ products|length }} Products</span>
-                        {% if merchant.location %}
+                        <span>{{ merchant.products.count }} Products</span>
+                        {% if merchant.address %}
                             <span>•</span>
                             <span class="flex items-center gap-1">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke-width="2"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke-width="2"/></svg>
@@ -50,64 +44,80 @@
                         {% endif %}
                     </div>
                 </div>
-                <div class="hidden lg:block">
-                    <button class="px-8 py-3 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 rounded-2xl text-white font-bold transition-all">
-                        Follow Store
-                    </button>
-                </div>
             </div>
         </div>
     </div>
 
-    <!-- Store Navigation & Content -->
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-        <div class="flex items-center justify-between mb-10 border-b border-gray-100 pb-6">
-            <h2 class="text-2xl font-black text-african-green">Full <span class="text-african-orange">Collection</span></h2>
-            <div class="flex items-center gap-2">
-                <span class="text-sm font-bold text-gray-400 mr-2">Sort by:</span>
-                <select class="text-sm font-black text-african-green border-none bg-gray-50 rounded-xl focus:ring-0">
-                    <option>Latest Arrivals</option>
-                    <option>Price: Low to High</option>
-                    <option>Price: High to Low</option>
-                </select>
-            </div>
+    <!-- Merchant Description -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
+        <div class="max-w-3xl">
+            <p class="text-gray-600 leading-relaxed text-lg">{{ merchant.description }}</p>
         </div>
+    </div>
 
-        <!-- Products Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {% for product in products %}
-            <div class="group relative bg-white rounded-3xl border border-gray-100 hover:border-african-orange/20 hover:shadow-2xl hover:shadow-african-orange/5 transition-all duration-500 overflow-hidden">
-                <div class="relative h-64 overflow-hidden">
-                    {% if product.image %}
-                        <img src="{{ product.image.url }}" class="h-full w-full object-cover transform group-hover:scale-110 transition-transform duration-700" alt="{{ product.name }}">
-                    {% endif %}
-                    <div class="absolute top-4 right-4 animate-pulse">
-                        <span class="px-3 py-1 bg-white ring-1 ring-african-green/10 rounded-full text-[10px] font-black uppercase text-african-green shadow-xl tracking-widest italic">In Stock</span>
+    <!-- Store Content -->
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 pb-24">
+        {% for category in categories %}
+        <section class="mb-20">
+            <div class="flex items-center justify-between mb-10 border-b border-gray-100 pb-6">
+                <h2 class="text-2xl font-black text-african-green">{{ category.name }} <span class="text-african-orange">Collection</span></h2>
+                <span class="text-sm font-bold text-gray-400">{{ category.products.count }} ITEMS</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                {% for product in category.products.all %}
+                {% if product.merchant == merchant %}
+                <div class="group relative bg-white rounded-3xl border border-gray-100 hover:border-african-orange/20 hover:shadow-2xl hover:shadow-african-orange/5 transition-all duration-500 overflow-hidden">
+                    <div class="relative h-64 overflow-hidden">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" class="h-full w-full object-cover transform group-hover:scale-110 transition-transform duration-700" alt="{{ product.name }}">
+                        {% else %}
+                            <div class="h-full w-full bg-gray-50 flex items-center justify-center text-african-green/20 text-4xl font-black">
+                                {{ product.name|first }}
+                            </div>
+                        {% endif %}
+                        <div class="absolute top-4 right-4">
+                            {% if product.is_available %}
+                            <span class="px-3 py-1 bg-white ring-1 ring-african-green/10 rounded-full text-[10px] font-black uppercase text-african-green shadow-xl tracking-widest italic">In Stock</span>
+                            {% else %}
+                            <span class="px-3 py-1 bg-red-50 ring-1 ring-red-100 rounded-full text-[10px] font-black uppercase text-red-500 shadow-xl tracking-widest italic">Out of Stock</span>
+                            {% endif %}
+                        </div>
                     </div>
-                </div>
-                <div class="p-6">
-                    <p class="text-[10px] font-black text-african-orange uppercase tracking-widest mb-1">{{ product.category.name|default:"General" }}</p>
-                    <h3 class="text-lg font-black text-african-green mb-4 leading-tight group-hover:text-african-orange transition-colors">
-                        <a href="{% url 'catalog:product_detail' product.id %}">
-                            <span class="absolute inset-0"></span>
-                            {{ product.name }}
-                        </a>
-                    </h3>
-                    <div class="flex items-center justify-between">
-                        <span class="text-xl font-black text-african-green">${{ product.price }}</span>
-                        <div class="flex items-center gap-1 text-african-gold">
-                            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                            <span class="text-xs font-black">4.9</span>
+                    <div class="p-6">
+                        <h3 class="text-lg font-black text-african-green mb-4 leading-tight group-hover:text-african-orange transition-colors">
+                            <a href="{% url 'catalog:product_detail' product.slug %}">
+                                <span class="absolute inset-0"></span>
+                                {{ product.name }}
+                            </a>
+                        </h3>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xl font-black text-african-green">${{ product.price }}</span>
+                            <div class="flex items-center gap-1 text-african-gold">
+                                <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                <span class="text-xs font-black">4.9</span>
+                            </div>
                         </div>
                     </div>
                 </div>
+                {% endif %}
+                {% endfor %}
             </div>
-            {% empty %}
-            <div class="col-span-full py-20 text-center">
-                <p class="text-gray-400 font-medium italic">This merchant hasn't listed any products yet.</p>
+        </section>
+        {% empty %}
+        <div class="text-center py-24 bg-gray-50 rounded-[3rem] border-2 border-dashed border-gray-200">
+            <div class="mb-6">
+                <svg class="mx-auto h-16 w-16 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
             </div>
-            {% endfor %}
+            <h3 class="text-xl font-black text-african-green mb-2">Empty Storefront</h3>
+            <p class="text-gray-400 font-medium italic mb-8">This merchant hasn't listed any products in our catalog yet.</p>
+            <a href="{% url 'core:index' %}" class="inline-flex items-center px-8 py-3 bg-african-green text-white font-bold rounded-2xl hover:bg-african-green/90 transition-all">
+                Browse Other Stores
+            </a>
         </div>
+        {% endfor %}
     </div>
 </div>
 {% endblock %}

@@ -1,7 +1,7 @@
 from django.views.generic import DetailView, TemplateView, ListView, CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from django.shortcuts import redirect
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import MerchantProfile
 from .services import MerchantService
 from catalog.models import Category, Product
@@ -64,6 +64,14 @@ class MerchantDetailView(DetailView):
     template_name = 'merchants/merchant_detail.html'
     context_object_name = 'merchant'
     slug_url_kwarg = 'slug'
+
+    def get(self, request, *args, **kwargs):
+        # Support pour les anciens liens utilisant l'ID
+        slug = self.kwargs.get(self.slug_url_kwarg)
+        if slug and slug.isdigit():
+            merchant = get_object_or_404(MerchantProfile, id=int(slug))
+            return redirect('merchants:detail', slug=merchant.slug)
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
