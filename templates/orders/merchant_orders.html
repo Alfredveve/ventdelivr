@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Gestion des Commandes - VentDelivr{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-12">
+    <div class="flex items-center justify-between mb-12">
+        <div>
+            <h1 class="text-4xl font-black text-gray-900 tracking-tight">Tableau de bord Marchand</h1>
+            <p class="text-xl text-gray-500 mt-2">Gérez les commandes de votre boutique.</p>
+        </div>
+        <div class="bg-african-green/5 px-6 py-4 rounded-3xl border border-african-green/10 flex items-center gap-4">
+            <div class="h-12 w-12 rounded-2xl bg-african-green flex items-center justify-center text-african-gold">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
+            </div>
+            <div>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Store</p>
+                <p class="text-lg font-extrabold text-african-green">{{ user.merchant_profile.store_name }}</p>
+            </div>
+        </div>
+    </div>
+
+    {% if orders %}
+    <div class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead class="bg-gray-50/50 border-b border-gray-100">
+                    <tr>
+                        <th class="px-8 py-6 text-sm font-bold text-gray-500 uppercase tracking-widest">ID Commande</th>
+                        <th class="px-8 py-6 text-sm font-bold text-gray-500 uppercase tracking-widest">Client</th>
+                        <th class="px-8 py-6 text-sm font-bold text-gray-500 uppercase tracking-widest">Date</th>
+                        <th class="px-8 py-6 text-sm font-bold text-gray-500 uppercase tracking-widest">Articles</th>
+                        <th class="px-8 py-6 text-sm font-bold text-gray-500 uppercase tracking-widest">Statut</th>
+                        <th class="px-8 py-6 text-right text-sm font-bold text-gray-500 uppercase tracking-widest">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50">
+                    {% for order in orders %}
+                    <tr class="hover:bg-gray-50/30 transition-colors">
+                        <td class="px-8 py-8 font-extrabold text-gray-900">#{{ order.id }}</td>
+                        <td class="px-8 py-8">
+                            <div class="flex items-center gap-3">
+                                <div class="h-10 w-10 rounded-full bg-african-orange/10 flex items-center justify-center text-african-orange text-xs font-bold">
+                                    {{ order.customer.username|slice:":1"|upper }}
+                                </div>
+                                <span class="font-bold text-gray-700">{{ order.customer.username }}</span>
+                            </div>
+                        </td>
+                        <td class="px-8 py-8 text-sm text-gray-500 font-medium">{{ order.created_at|date:"d/m/Y" }}</td>
+                        <td class="px-8 py-8">
+                            <span class="inline-flex items-center px-3 py-1 bg-gray-100 rounded-lg text-xs font-bold text-gray-600">
+                                {{ order.items.count }} article(s)
+                            </span>
+                        </td>
+                        <td class="px-8 py-8">
+                            <span class="inline-flex items-center px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.1em]
+                                {% if order.status == 'PENDING' %}bg-yellow-100 text-yellow-700
+                                {% elif order.status == 'PAID' %}bg-green-100 text-green-700
+                                {% elif order.status == 'SHIPPED' %}bg-blue-100 text-blue-700
+                                {% elif order.status == 'DELIVERED' %}bg-african-green/10 text-african-green
+                                {% else %}bg-red-100 text-red-700{% endif %}">
+                                {{ order.get_status_display }}
+                            </span>
+                        </td>
+                        <td class="px-8 py-8 text-right">
+                            <div class="flex items-center justify-end gap-3">
+                                <a href="{% url 'orders:detail' order.id %}" class="p-2.5 bg-gray-100 text-gray-500 rounded-xl hover:bg-gray-200 transition-colors" title="Voir détails">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                </a>
+                                {% if order.status == 'PAID' %}
+                                <form action="{% url 'orders:ship' order.id %}" method="post" class="inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="p-2.5 bg-african-orange text-white rounded-xl hover:bg-orange-600 shadow-sm transition-all transform hover:scale-105" title="Expédier">
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="bg-white rounded-[2.5rem] border-2 border-dashed border-gray-200 p-24 text-center">
+        <div class="h-28 w-28 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-8">
+            <svg class="h-14 w-14 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+        </div>
+        <h3 class="text-3xl font-black text-gray-900 mb-3">Aucune commande reçue</h3>
+        <p class="text-xl text-gray-500 max-w-md mx-auto">Préparez vos stocks, vos prochains clients arrivent bientôt sur VentDelivr.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

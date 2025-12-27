@@ -3,6 +3,10 @@ from django.core.exceptions import ValidationError
 from django.utils.text import slugify
 from .models import Product, Category, Inventory
 
+class InsufficientStockError(ValidationError):
+    """Exception levée quand le stock est insuffisant."""
+    pass
+
 class ProductService:
     """
     Service gérant la logique métier liée aux produits.
@@ -110,7 +114,7 @@ class InventoryService:
         new_quantity = inventory.quantity + quantity
         
         if new_quantity < 0:
-            raise ValidationError("Stock insuffisant pour cette opération.")
+            raise InsufficientStockError(f"Stock insuffisant pour {product.name}. Disponible: {inventory.quantity}")
             
         inventory.quantity = new_quantity
         inventory.save()

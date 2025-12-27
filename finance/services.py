@@ -1,6 +1,10 @@
 from django.db import transaction
 from .models import Wallet, Transaction
 
+class InsufficientFundsError(ValueError):
+    """Exception levée quand le solde est insuffisant."""
+    pass
+
 class FinanceService:
     """
     Service gérant les opérations financières.
@@ -13,7 +17,7 @@ class FinanceService:
         Débite le portefeuille du client pour une commande.
         """
         if customer_wallet.balance < amount:
-            raise ValueError("Solde insuffisant.")
+            raise InsufficientFundsError(f"Solde insuffisant pour le paiement de {amount}. Disponible: {customer_wallet.balance}")
             
         customer_wallet.balance -= amount
         customer_wallet.save()
