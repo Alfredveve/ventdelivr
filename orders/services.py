@@ -116,13 +116,19 @@ class OrderService:
 
     @staticmethod
     @transaction.atomic
-    def ship_order(order_id):
+    def ship_order(order_id, merchant_notes=""):
         """
-        Le marchand marque la commande comme expédiée.
+        Le marchand prépare la commande et la marque comme prête pour le ramassage.
         """
+        from delivery.services import DeliveryService
         order = Order.objects.get(id=order_id)
+        
         if order.status != Order.Status.PAID:
-            raise ValidationError(f"La commande #{order.id} ne peut être expédiée que si elle est payée.")
+            raise ValidationError(f"La commande #{order.id} doit être payée avant l'expédition.")
+        
+        # On passe par le service de livraison
+        if hasattr(order, 'delivery'):
+            DeliveryService.mark_as_ready(order.delivery.id, merchant_notes)
         
         order.status = Order.Status.SHIPPED
         order.save()
@@ -130,20 +136,27 @@ class OrderService:
 
     @staticmethod
     @transaction.atomic
-    def mark_as_delivered(order_id):
+    def mark_as_delivered(order_id, otp_code=None):
         """
-        Le livreur marque la commande comme livrée.
+        Finalise la livraison (généralement appelé par le livreur via DeliveryService).
         """
-        from django.utils import timezone
+        from delivery.services import DeliveryService
         order = Order.objects.select_related('delivery').get(id=order_id)
-        if order.status != Order.Status.SHIPPED:
-            raise ValidationError(f"La commande #{order.id} doit être expédiée avant d'être marquée comme livrée.")
         
-        order.status = Order.Status.DELIVERED
-        order.save()
-        
-        # Mettre à jour l'objet Delivery associé
-        if hasattr(order, 'delivery'):
+        if not hasattr(order, 'delivery'):
+             # Fallback pour les commandes sans objet delivery (ne devrait pas arriver)
+            order.status = Order.Status.DELIVERED
+            order.save()
+            return order
+
+        # Si un code est fourni, on passe par la validation sécurisée
+        if otp_code:
+            DeliveryService.complete_delivery(order.delivery.id, otp_code)
+        else:
+            # Mode manuel/simple si pas de code (moins recommandé)
+            order.status = Order.Status.DELIVERED
+            order.save()
+            
             delivery = order.delivery
             delivery.status = delivery.Status.DELIVERED
             delivery.delivered_at = timezone.now()

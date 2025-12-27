@@ -9,12 +9,10 @@ def trigger_delivery_creation(sender, instance, created, **kwargs):
     """
     Signal pour créer automatiquement une livraison quand une commande est payée.
     """
+    from delivery.services import DeliveryService
+    
     if not created and instance.status == Order.Status.PAID:
         # On vérifie si une livraison n'existe pas déjà
         if not hasattr(instance, 'delivery'):
-            Delivery.objects.create(
-                order=instance,
-                delivery_code=secrets.token_hex(4).upper(), # Code sécurisé pour la livraison
-                status=Delivery.Status.ASSIGNED
-            )
-            print(f"Livraison créée pour la commande #{instance.id}")
+            DeliveryService.create_delivery(instance)
+            print(f"Logistique de livraison initialisée pour la commande #{instance.id}")
