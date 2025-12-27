@@ -36,6 +36,9 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     discount_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     image = models.ImageField(upload_to='products/', blank=True, null=True)
+    sku = models.CharField(max_length=100, unique=True, help_text="Stock Keeping Unit")
+    weight = models.DecimalField(max_digits=10, decimal_places=2, help_text="Weight in kg", default=0.0)
+    dimensions = models.CharField(max_length=100, blank=True, help_text="LxWxH in cm")
     is_available = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -47,3 +50,20 @@ class Product(models.Model):
 
     def __str__(self):
         return f"{self.name} by {self.merchant.store_name}"
+
+class Inventory(models.Model):
+    product = models.OneToOneField(
+        Product,
+        on_delete=models.CASCADE,
+        related_name='inventory'
+    )
+    quantity = models.PositiveIntegerField(default=0)
+    low_stock_threshold = models.PositiveIntegerField(default=10)
+    last_updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name_plural = "Inventories"
+
+    def __str__(self):
+        return f"Inventory for {self.product.name}"
+
