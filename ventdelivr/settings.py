@@ -119,6 +119,14 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Authentication Settings
+LOGIN_REDIRECT_URL = 'core:index'
+LOGOUT_REDIRECT_URL = 'core:index'
+LOGIN_URL = 'users:login'
+
+# Email Backend for Development (Prints to console)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/

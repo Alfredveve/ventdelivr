@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold">Mes Produits</h1>
+        <a href="{% url 'merchants:product_create' %}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+            Nouveau Produit
+        </a>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Catégorie</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prix</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for product in products %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="h-10 w-10 object-cover rounded">
+                            {% else %}
+                                <div class="h-10 w-10 bg-gray-200 rounded flex items-center justify-center text-gray-400">
+                                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                </div>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{{ product.name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ product.category.name|default:"-" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if product.discount_price %}
+                                <span class="text-red-600 font-bold">{{ product.discount_price }} €</span>
+                                <span class="text-gray-400 line-through text-sm ml-1">{{ product.price }} €</span>
+                            {% else %}
+                                <span>{{ product.price }} €</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {% if product.is_available %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                                {{ product.is_available|yesno:"Disponible,Indisponible" }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <a href="{% url 'merchants:product_update' product.pk %}" class="text-indigo-600 hover:text-indigo-900">Modifier</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="px-6 py-4 text-center text-gray-500">Aucun produit trouvé.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        {% if is_paginated %}
+        <div class="px-6 py-3 border-t border-gray-200 bg-gray-50 flex justify-between items-center">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}" class="text-indigo-600 hover:text-indigo-900">Précédent</a>
+            {% else %}
+                <span class="text-gray-400">Précédent</span>
+            {% endif %}
+            
+            <span class="text-gray-700">Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}</span>
+            
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="text-indigo-600 hover:text-indigo-900">Suivant</a>
+            {% else %}
+                <span class="text-gray-400">Suivant</span>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

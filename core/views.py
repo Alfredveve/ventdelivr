@@ -12,3 +12,17 @@ class HomeView(ListView):
         if not queryset.exists():
             queryset = MerchantProfile.objects.all()
         return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            # Add specific context based on role
+            user = self.request.user
+            context['role'] = user.role
+            if user.role == user.Role.MERCHANT:
+                # Add merchant specific data if needed, e.g., order count
+                pass
+            elif user.role == user.Role.CUSTOMER:
+                # Add customer specific data
+                pass
+        return context

@@ -3,6 +3,50 @@
 {% block content %}
 <div class="px-4 py-12 sm:px-6 lg:px-8 bg-white rounded-2xl shadow-xl overflow-hidden">
     <div class="lg:flex lg:items-center lg:justify-between">
+        {% if user.is_authenticated %}
+        <!-- Dashboard View for Logged In Users -->
+        <div class="max-w-2xl">
+            <h1 class="text-4xl font-extrabold tracking-tight text-african-green sm:text-5xl">
+                Welcome back, <br/>
+                <span class="text-african-orange">{{ user.username|title }}</span>
+            </h1>
+            <p class="mt-4 text-xl text-gray-500">
+                {% if user.role == 'MERCHANT' %}
+                    Manage your store, track your sales, and connect with customers.
+                {% else %}
+                    Ready to discover more authentic African flavors today?
+                {% endif %}
+            </p>
+            <div class="mt-10 flex items-center gap-x-6">
+                {% if user.role == 'MERCHANT' %}
+                    <a href="{% url 'merchants:dashboard' %}" class="rounded-full bg-african-orange px-8 py-3.5 text-lg font-semibold text-white shadow-sm hover:bg-orange-600 transition-all">
+                        Manage Store
+                    </a>
+                    <a href="#" class="text-lg font-semibold leading-6 text-african-green hover:text-african-orange transition-colors">
+                        View Orders <span aria-hidden="true">→</span>
+                    </a>
+                {% else %}
+                    <a href="#merchants" class="rounded-full bg-african-orange px-8 py-3.5 text-lg font-semibold text-white shadow-sm hover:bg-orange-600 transition-all">
+                        Browse Merchants
+                    </a>
+                    <a href="{% url 'users:customer_dashboard' %}" class="text-lg font-semibold leading-6 text-african-green hover:text-african-orange transition-colors">
+                        My Orders <span aria-hidden="true">→</span>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="mt-10 lg:mt-0 lg:flex-shrink-0 hidden lg:block">
+            <div class="relative h-64 w-64 sm:h-80 sm:w-80 lg:h-96 lg:w-96 rounded-full bg-green-50/50 flex items-center justify-center border-2 border-dashed border-african-green/20">
+                <div class="text-center p-6">
+                    <p class="text-african-green font-bold text-lg mb-2">Platform Status</p>
+                     <span class="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800">
+                        ● System Operational
+                     </span>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <!-- Default Hero View -->
         <div class="max-w-xl">
             <h1 class="text-4xl font-extrabold tracking-tight text-african-green sm:text-5xl">
                 The flavors of Africa, <br/>
@@ -12,7 +56,7 @@
                 Join our community of merchants and food lovers. We bridge the gap between African culture and the Canadian market with a platform built for growth.
             </p>
             <div class="mt-10 flex items-center gap-x-6">
-                <a href="#" class="rounded-full bg-african-orange px-8 py-3.5 text-lg font-semibold text-white shadow-sm hover:bg-orange-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-african-orange transition-all duration-300">
+                <a href="{% url 'users:register' %}" class="rounded-full bg-african-orange px-8 py-3.5 text-lg font-semibold text-white shadow-sm hover:bg-orange-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-african-orange transition-all duration-300">
                     Get Started
                 </a>
                 <a href="#" class="text-lg font-semibold leading-6 text-african-green hover:text-african-orange transition-colors">
@@ -29,6 +73,7 @@
                 </div>
             </div>
         </div>
+        {% endif %}
     </div>
 
     <!-- Feature section -->

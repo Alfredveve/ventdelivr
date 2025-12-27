@@ -13,4 +13,8 @@ def create_related_profiles(sender, instance, created, **kwargs):
     if created:
         if instance.role == User.Role.MERCHANT:
             MerchantProfile.objects.get_or_create(user=instance, store_name=f"Boutique de {instance.username}")
-        # On pourrait ajouter ici la création de profils Driver ou Customer si nécessaire
+        
+        # Assign user to group based on role
+        from django.contrib.auth.models import Group
+        group, _ = Group.objects.get_or_create(name=instance.get_role_display())
+        instance.groups.add(group)
