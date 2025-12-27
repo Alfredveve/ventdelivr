@@ -2,8 +2,12 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils.decorators import method_decorator
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
 from .models import Order, OrderItem
 from .services import OrderService
+from .cart import Cart
+from catalog.models import Product
 
 def merchant_required(view_func):
     def _wrapped_view(request, *args, **kwargs):
@@ -12,6 +16,98 @@ def merchant_required(view_func):
             return redirect('core:index')
         return view_func(request, *args, **kwargs)
     return _wrapped_view
+
+# ==================== CART VIEWS ====================
+
+def cart_view(request):
+    """
+    Affiche le panier d'achat.
+    """
+    cart = Cart(request)
+    return render(request, 'orders/cart.html', {'cart': cart})
+
+@require_POST
+def add_to_cart(request, product_id):
+    """
+    Ajoute un produit au panier.
+    """
+    cart = Cart(request)
+    product = get_object_or_404(Product, id=product_id)
+    quantity = int(request.POST.get('quantity', 1))
+    
+    # Vérifier la disponibilité
+    if not product.is_available:
+        messages.error(request, f"{product.name} n'est plus disponible.")
+        return redirect('catalog:product_detail', slug=product.slug)
+    
+    # Vérifier le stock
+    if hasattr(product, 'inventory') and product.inventory.quantity < quantity:
+        messages.error(request, f"Stock insuffisant pour {product.name}.")
+        return redirect('catalog:product_detail', slug=product.slug)
+    
+    cart.add(product=product, quantity=quantity)
+    messages.success(request, f"{product.name} a été ajouté au panier.")
+    
+    # Rediriger vers la page précédente ou le panier
+    next_url = request.POST.get('next', 'orders:cart')
+    return redirect(next_url)
+
+@require_POST
+def remove_from_cart(request, product_id):
+    """
+    Retire un produit du panier.
+    """
+    cart = Cart(request)
+    product = get_object_or_404(Product, id=product_id)
+    cart.remove(product)
+    messages.info(request, f"{product.name} a été retiré du panier.")
+    return redirect('orders:cart')
+
+@require_POST
+def update_cart(request):
+    """
+    Met à jour les quantités dans le panier.
+    """
+    cart = Cart(request)
+    
+    for key, value in request.POST.items():
+        if key.startswith('quantity_'):
+            product_id = key.split('_')[1]
+            quantity = int(value)
+            cart.update(product_id, quantity)
+    
+    messages.success(request, "Panier mis à jour.")
+    return redirect('orders:cart')
+
+@login_required
+@require_POST
+def checkout(request):
+    """
+    Valide le panier et crée une commande.
+    """
+    cart = Cart(request)
+    
+    if len(cart) == 0:
+        messages.error(request, "Votre panier est vide.")
+        return redirect('orders:cart')
+    
+    try:
+        # Créer la commande à partir du panier
+        items_data = cart.get_items_data()
+        order = OrderService.place_order(request.user, items_data)
+        
+        # Vider le panier
+        cart.clear()
+        
+        messages.success(request, f"Commande #{order.id} créée avec succès ! Elle est en attente de paiement.")
+        return redirect('orders:detail', order_id=order.id)
+        
+    except Exception as e:
+        messages.error(request, f"Erreur lors de la création de la commande : {e}")
+        return redirect('orders:cart')
+
+# ==================== ORDER VIEWS ====================
+
 
 @login_required
 def order_list(request):

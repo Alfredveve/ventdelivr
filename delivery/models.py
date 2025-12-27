@@ -43,6 +43,20 @@ class Delivery(models.Model):
     picked_up_at = models.DateTimeField(null=True, blank=True)
     delivered_at = models.DateTimeField(null=True, blank=True)
     estimated_delivery_time = models.DateTimeField(null=True, blank=True)
+    
+    # Financials
+    delivery_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+
+    # Location Data (Geocoordinates)
+    pickup_latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    pickup_longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    dropoff_latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    dropoff_longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    
+    # Real-time Driver Location
+    current_latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    current_longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    last_location_update = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"Livraison pour la Commande #{self.order.id} - {self.get_status_display()}"

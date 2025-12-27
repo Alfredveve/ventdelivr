@@ -72,26 +72,47 @@
                 </div>
 
                 {% if product.inventory.quantity > 0 %}
-                <form action="{% url 'orders:quick_buy' product.id %}" method="post" class="space-y-6">
-                    {% csrf_token %}
-                    <div class="flex items-center gap-4">
-                        <div class="flex-1">
-                            <label for="quantity" class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Quantité</label>
-                            <select name="quantity" id="quantity" class="w-full bg-gray-50 border-0 rounded-2xl py-4 px-6 text-lg font-bold focus:ring-2 focus:ring-african-orange">
-                                {% for i in "123456789"|make_list %}
-                                    {% if i|add:0 <= product.inventory.quantity %}
-                                        <option value="{{ i }}">{{ i }}</option>
-                                    {% endif %}
-                                {% endfor %}
-                            </select>
+                <div class="space-y-4">
+                    <form action="{% url 'orders:quick_buy' product.id %}" method="post" class="space-y-6">
+                        {% csrf_token %}
+                        <div class="flex items-center gap-4">
+                            <div class="flex-1">
+                                <label for="quantity" class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Quantité</label>
+                                <select name="quantity" id="quantity" class="w-full bg-gray-50 border-0 rounded-2xl py-4 px-6 text-lg font-bold focus:ring-2 focus:ring-african-orange">
+                                    {% for i in "123456789"|make_list %}
+                                        {% if i|add:0 <= product.inventory.quantity %}
+                                            <option value="{{ i }}">{{ i }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="flex-[2] pt-6">
+                                <button type="submit" class="w-full bg-african-orange text-white py-5 px-8 rounded-2xl text-xl font-black shadow-xl shadow-orange-500/20 hover:bg-orange-600 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+                                    Acheter maintenant
+                                </button>
+                            </div>
                         </div>
-                        <div class="flex-[2] pt-6">
-                            <button type="submit" class="w-full bg-african-orange text-white py-5 px-8 rounded-2xl text-xl font-black shadow-xl shadow-orange-500/20 hover:bg-orange-600 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
-                                Acheter maintenant
-                            </button>
-                        </div>
-                    </div>
-                </form>
+                    </form>
+                    
+                    <form action="{% url 'orders:add_to_cart' product.id %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="quantity" value="1" id="cart-quantity">
+                        <input type="hidden" name="next" value="{{ request.path }}">
+                        <button type="submit" class="w-full bg-african-green text-white py-5 px-8 rounded-2xl text-xl font-black shadow-xl shadow-green-900/20 hover:bg-african-green/90 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-3">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                            Ajouter au panier
+                        </button>
+                    </form>
+                </div>
+                
+                <script>
+                    // Sync quantity selector with add to cart
+                    document.getElementById('quantity').addEventListener('change', function() {
+                        document.getElementById('cart-quantity').value = this.value;
+                    });
+                </script>
                 {% else %}
                 <button disabled class="w-full bg-gray-100 text-gray-400 py-6 rounded-3xl text-xl font-black cursor-not-allowed">
                     Indisponible

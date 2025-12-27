@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block title %}Products - VentDelivr{% endblock %}
+
+{% block content %}
+<div class="px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-4xl font-bold text-gray-900 mb-2">Discover Our Products</h1>
+        <p class="text-lg text-gray-600">Explore authentic African products from trusted merchants</p>
+    </div>
+
+    <!-- Category Filter -->
+    {% if categories %}
+    <div class="mb-8">
+        <div class="flex items-center gap-2 overflow-x-auto pb-2">
+            <a href="{% url 'catalog:product_list' %}" 
+               class="px-4 py-2 rounded-full bg-african-green text-white font-medium hover:bg-african-green/90 transition-colors whitespace-nowrap">
+                All Products
+            </a>
+            {% for category in categories %}
+            <a href="{% url 'catalog:category_detail' category.slug %}" 
+               class="px-4 py-2 rounded-full bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 transition-colors whitespace-nowrap">
+                {{ category.name }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Products Grid -->
+    {% if products %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {% for product in products %}
+        <div class="group bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100">
+            <!-- Product Image -->
+            <div class="relative h-64 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
+                {% if product.image %}
+                <img src="{{ product.image.url }}" 
+                     alt="{{ product.name }}" 
+                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                {% else %}
+                <div class="w-full h-full flex items-center justify-center">
+                    <svg class="w-24 h-24 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+                {% endif %}
+                
+                <!-- Discount Badge -->
+                {% if product.discount_price %}
+                <div class="absolute top-3 right-3 bg-african-orange text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
+                    SALE
+                </div>
+                {% endif %}
+                
+                <!-- Stock Status -->
+                {% if product.inventory %}
+                    {% if product.inventory.quantity == 0 %}
+                    <div class="absolute top-3 left-3 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
+                        Out of Stock
+                    </div>
+                    {% elif product.inventory.quantity <= product.inventory.low_stock_threshold %}
+                    <div class="absolute top-3 left-3 bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
+                        Low Stock
+                    </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+
+            <!-- Product Info -->
+            <div class="p-5">
+                <!-- Category -->
+                {% if product.category %}
+                <p class="text-xs font-semibold text-african-green uppercase tracking-wide mb-2">
+                    {{ product.category.name }}
+                </p>
+                {% endif %}
+                
+                <!-- Product Name -->
+                <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-african-orange transition-colors">
+                    {{ product.name }}
+                </h3>
+                
+                <!-- Merchant -->
+                <p class="text-sm text-gray-600 mb-3">
+                    by <span class="font-semibold">{{ product.merchant.store_name }}</span>
+                </p>
+                
+                <!-- Price -->
+                <div class="flex items-baseline gap-2 mb-4">
+                    {% if product.discount_price %}
+                    <span class="text-2xl font-bold text-african-orange">${{ product.discount_price }}</span>
+                    <span class="text-lg text-gray-400 line-through">${{ product.price }}</span>
+                    {% else %}
+                    <span class="text-2xl font-bold text-gray-900">${{ product.price }}</span>
+                    {% endif %}
+                </div>
+                
+                <!-- Actions -->
+                <div class="flex gap-2">
+                    <a href="{% url 'catalog:product_detail' product.slug %}" 
+                       class="flex-1 bg-african-green text-white text-center py-2.5 rounded-lg font-semibold hover:bg-african-green/90 transition-colors shadow-sm">
+                        View Details
+                    </a>
+                    
+                    {% if product.is_available and product.inventory.quantity > 0 %}
+                    <form action="{% url 'orders:add_to_cart' product.id %}" method="post" class="flex-1">
+                        {% csrf_token %}
+                        <input type="hidden" name="quantity" value="1">
+                        <input type="hidden" name="next" value="{% url 'catalog:product_list' %}">
+                        <button type="submit" 
+                                class="w-full bg-african-orange text-white py-2.5 rounded-lg font-semibold hover:bg-orange-600 transition-colors shadow-sm flex items-center justify-center gap-1">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                            Add
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-16">
+        <svg class="mx-auto h-24 w-24 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+        </svg>
+        <h3 class="text-xl font-semibold text-gray-900 mb-2">No products available</h3>
+        <p class="text-gray-600">Check back soon for new products!</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

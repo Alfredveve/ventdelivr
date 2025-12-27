@@ -127,6 +127,9 @@ LOGIN_URL = 'users:login'
 # Email Backend for Development (Prints to console)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+# Cart Session ID
+CART_SESSION_ID = 'cart'
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/

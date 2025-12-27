@@ -24,3 +24,24 @@ def product_detail(request, slug):
         'product': product,
         'related_products': related_products
     })
+
+def category_list(request):
+    """
+    Liste toutes les catégories disponibles.
+    """
+    categories = Category.objects.all()
+    return render(request, 'catalog/category_list.html', {
+        'categories': categories
+    })
+
+def category_detail(request, slug):
+    """
+    Affiche les produits d'une catégorie spécifique.
+    """
+    category = get_object_or_404(Category, slug=slug)
+    products = Product.objects.filter(category=category, is_available=True).select_related('merchant', 'inventory')
+    
+    return render(request, 'catalog/category_detail.html', {
+        'category': category,
+        'products': products
+    })

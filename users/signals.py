@@ -12,7 +12,13 @@ def create_related_profiles(sender, instance, created, **kwargs):
     """
     if created:
         if instance.role == User.Role.MERCHANT:
-            MerchantProfile.objects.get_or_create(user=instance, store_name=f"Boutique de {instance.username}")
+            MerchantProfile.objects.get_or_create(
+                user=instance,
+                defaults={
+                    'store_name': f"Boutique de {instance.username}",
+                    'address': instance.address if instance.address else "Adresse non renseignée"
+                }
+            )
         
         # Assign user to group based on role
         from django.contrib.auth.models import Group
