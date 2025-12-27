@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ merchant.store_name }} - VentDelivr{% endblock %}
+
+{% block content %}
+<div class="bg-white">
+    <!-- Merchant Header -->
+    <div class="relative">
+        <div class="h-48 w-full lg:h-64 bg-african-green overflow-hidden rounded-t-2xl">
+            {% if merchant.banner_image %}
+            <img src="{{ merchant.banner_image.url }}" alt="{{ merchant.store_name }}" class="w-full h-full object-cover opacity-60">
+            {% else %}
+            <div class="w-full h-full bg-gradient-to-r from-african-green to-african-gold opacity-20"></div>
+            {% endif %}
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="-mt-12 sm:-mt-16 sm:flex sm:items-end sm:space-x-5">
+                <div class="flex">
+                    <div class="h-24 w-24 rounded-full ring-4 ring-white bg-white overflow-hidden sm:h-32 sm:w-32 shadow-lg">
+                        {% if merchant.logo %}
+                        <img src="{{ merchant.logo.url }}" alt="{{ merchant.store_name }}" class="h-full w-full object-cover">
+                        {% else %}
+                        <div class="h-full w-full bg-african-gold flex items-center justify-center text-african-green text-4xl font-bold">
+                            {{ merchant.store_name|first }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="mt-6 sm:flex-1 sm:min-w-0 sm:flex sm:items-center sm:justify-end sm:space-x-6 sm:pb-1">
+                    <div class="sm:hidden md:block mt-6 min-w-0 flex-1">
+                        <h1 class="text-3xl font-bold text-african-green truncate">{{ merchant.store_name }}</h1>
+                        <p class="text-sm text-gray-500">{{ merchant.address }}</p>
+                    </div>
+                    <div class="mt-6 flex flex-col justify-stretch space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4">
+                        <span class="inline-flex items-center rounded-full bg-green-50 px-3 py-1 text-sm font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Verified Merchant</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hidden sm:block md:hidden mt-6 min-w-0 flex-1">
+                <h1 class="text-3xl font-bold text-african-green truncate">{{ merchant.store_name }}</h1>
+            </div>
+        </div>
+    </div>
+
+    <!-- Merchant Description -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
+        <div class="max-w-3xl">
+            <p class="text-gray-600 leading-relaxed">{{ merchant.description }}</p>
+        </div>
+    </div>
+
+    <!-- Menu Section -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 pb-20">
+        <h2 class="text-2xl font-bold text-african-green border-b border-gray-100 pb-4 mb-8">Our Menu</h2>
+        
+        {% for category in categories %}
+        <section class="mb-16">
+            <h3 class="text-xl font-bold text-african-orange mb-6 flex items-center">
+                {{ category.name }}
+                <span class="ml-3 h-1 flex-grow bg-african-gold opacity-10 rounded-full"></span>
+            </h3>
+            
+            <div class="grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
+                {% for product in category.products.all %}
+                {% if product.merchant == merchant %}
+                <div class="group relative bg-gray-50 rounded-xl p-4 hover:bg-white hover:shadow-xl transition-all duration-300 border border-transparent hover:border-gray-100">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <h4 class="text-lg font-bold text-african-green mb-1">{{ product.name }}</h4>
+                            <p class="text-sm text-gray-500 line-clamp-2 pr-4 mb-4">{{ product.description }}</p>
+                        </div>
+                        <div class="h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg bg-gray-200">
+                            {% if product.image %}
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="h-full w-full object-cover object-center">
+                            {% else %}
+                            <div class="h-full w-full bg-african-green opacity-10 flex items-center justify-center">
+                                <span class="text-african-green font-bold">{{ product.name|first }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="mt-2 flex items-center justify-between">
+                        <span class="text-lg font-bold text-african-green">${{ product.price }}</span>
+                        <button class="bg-african-orange text-white h-10 w-10 rounded-full flex items-center justify-center hover:bg-orange-600 transition-colors shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </section>
+        {% empty %}
+        <div class="text-center py-20 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+            <p class="text-gray-500 font-medium italic">No items available in the menu right now.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

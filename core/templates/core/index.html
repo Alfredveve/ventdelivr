@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="px-4 py-12 sm:px-6 lg:px-8 bg-white rounded-2xl shadow-xl overflow-hidden">
+    <div class="lg:flex lg:items-center lg:justify-between">
+        <div class="max-w-xl">
+            <h1 class="text-4xl font-extrabold tracking-tight text-african-green sm:text-5xl">
+                The flavors of Africa, <br/>
+                <span class="text-african-orange">delivered to your door in Canada.</span>
+            </h1>
+            <p class="mt-4 text-xl text-gray-500">
+                Join our community of merchants and food lovers. We bridge the gap between African culture and the Canadian market with a platform built for growth.
+            </p>
+            <div class="mt-10 flex items-center gap-x-6">
+                <a href="#" class="rounded-full bg-african-orange px-8 py-3.5 text-lg font-semibold text-white shadow-sm hover:bg-orange-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-african-orange transition-all duration-300">
+                    Get Started
+                </a>
+                <a href="#" class="text-lg font-semibold leading-6 text-african-green hover:text-african-orange transition-colors">
+                    Become a Merchant <span aria-hidden="true">→</span>
+                </a>
+            </div>
+        </div>
+        <div class="mt-10 lg:mt-0 lg:flex-shrink-0">
+            <div class="relative h-64 w-64 sm:h-80 sm:w-80 lg:h-96 lg:w-96">
+                <div class="absolute inset-0 rounded-full bg-african-gold opacity-10 animate-pulse"></div>
+                <!-- Image placeholder would go here -->
+                <div class="absolute inset-4 rounded-full bg-gray-100 flex items-center justify-center border-2 border-dashed border-african-gold">
+                    <span class="text-african-green font-bold text-center px-4">Celebrating African Gastronomy</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature section -->
+    <div class="mt-20 border-t border-gray-100 pt-16">
+        <h2 class="text-3xl font-extrabold text-african-green mb-10">Featured Merchants</h2>
+        <div class="grid grid-cols-1 gap-y-12 sm:grid-cols-2 sm:gap-x-8 lg:grid-cols-3">
+            {% for merchant in merchants %}
+            <div class="group relative bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100">
+                <div class="aspect-h-9 aspect-w-16 w-full overflow-hidden bg-gray-200">
+                    {% if merchant.banner_image %}
+                    <img src="{{ merchant.banner_image.url }}" alt="{{ merchant.store_name }}" class="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-500">
+                    {% else %}
+                    <div class="h-48 w-full bg-gradient-to-br from-african-green to-blue-900 flex items-center justify-center">
+                        <span class="text-white text-4xl opacity-20 font-bold">{{ merchant.store_name|first }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-xl font-bold text-african-green">
+                            <a href="{% url 'merchants:detail' merchant.slug %}">
+                                <span aria-hidden="true" class="absolute inset-0"></span>
+                                {{ merchant.store_name }}
+                            </a>
+                        </h3>
+                        <span class="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Verified</span>
+                    </div>
+                    <p class="text-sm text-gray-500 line-clamp-2 mb-4">{{ merchant.description }}</p>
+                    <div class="flex items-center text-african-orange font-semibold text-sm">
+                        View Menu <span class="ml-1 group-hover:translate-x-1 transition-transform">→</span>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-gray-500">No merchants found yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Core values section -->
+    <div class="mt-20 border-t border-gray-100 pt-16 grid grid-cols-1 gap-y-12 sm:grid-cols-2 sm:gap-x-8 lg:grid-cols-3">
+        <div>
+            <h3 class="text-lg font-bold text-african-green">Fast Delivery</h3>
+            <p class="mt-2 text-gray-500">Reliable logistics network covering key Canadian urban centers.</p>
+        </div>
+        <div>
+            <h3 class="text-lg font-bold text-african-green">Authentic Products</h3>
+            <p class="mt-2 text-gray-500">Direct access to the best African restaurants and grocery stores.</p>
+        </div>
+        <div>
+            <h3 class="text-lg font-bold text-african-green">Growth Focused</h3>
+            <p class="mt-2 text-gray-500">Fair commissions designed to help African entrepreneurs thrive.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
