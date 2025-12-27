@@ -121,8 +121,96 @@
                 </div>
             </div>
         </nav>
+        <main>
+            <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
+                {% if messages %}
+                <div class="mb-6 space-y-2">
+                    {% for message in messages %}
+                    <div class="p-4 rounded-xl border {% if message.tags == 'success' %}bg-green-50 border-green-200 text-green-800{% elif message.tags == 'error' %}bg-red-50 border-red-200 text-red-800{% else %}bg-blue-50 border-blue-200 text-blue-800{% endif %} flex items-center justify-between shadow-sm">
+                        <span class="text-sm font-medium">{{ message }}</span>
+                        <button onclick="this.parentElement.remove()" class="text-current opacity-50 hover:opacity-100">&times;</button>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
 
+                {% block content %}
+                {% endblock %}
+            </div>
         </main>
+
+        <!-- Footer -->
+        <footer class="bg-african-green text-gray-300 pt-20 pb-10 mt-20 border-t border-white/5">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 border-b border-white/10 pb-16">
+                    <!-- Brand Column -->
+                    <div class="space-y-6">
+                        <a href="{% url 'core:index' %}" class="text-3xl font-black text-african-gold tracking-tighter">
+                            VentDelivr
+                        </a>
+                        <p class="text-gray-400 text-sm leading-relaxed max-w-xs font-medium">
+                            Bringing the heart of African commerce to Canada. We connect you with authentic products and reliable delivery, celebrating culture one shipment at a time.
+                        </p>
+                        <div class="flex items-center gap-4">
+                            <a href="#" class="h-10 w-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-african-orange hover:text-white transition-all">
+                                <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                            </a>
+                            <a href="#" class="h-10 w-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-african-orange hover:text-white transition-all">
+                                <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.315 2c2.43 0 2.784.012 3.82.058 1.036.045 1.74.207 2.357.444.63.245 1.17.572 1.71 1.11.54.54.867 1.08 1.11 1.71.237.615.4 1.32.445 2.356.046 1.036.059 1.39.059 3.82s-.013 2.783-.059 3.82c-.045 1.036-.208 1.74-.445 2.357-.245.63-.572 1.17-1.11 1.71-.54.54-1.08.867-1.71 1.11-.615.237-1.32.4-2.356.445-1.036.046-1.39.059-3.82.059s-2.783-.013-3.82-.059c-1.036-.045-1.74-.208-2.357-.445-.63-.245-1.17-.572-1.71-1.11-.54-.54-.867-1.08-1.11-1.71-.237-.615-.4-1.32-.445-2.356-.046-1.036-.059-1.39-.059-3.82s.013-2.783.059-3.82c.045-1.036.208-1.74.445-2.357.245-.63.572-1.17 1.11-1.71.54-.54 1.08-.867 1.71-1.11.615-.237 1.32-.4 2.356-.445 1.036-.046 1.39-.059 3.82-.059zM12.315 0c-2.47 0-2.822.013-3.922.062-1.096.049-1.844.223-2.503.48-.68.264-1.257.618-1.834 1.194-.576.577-.93 1.155-1.194 1.835-.257.659-.431 1.407-.48 2.503-.05 1.1-.062 1.452-.062 3.922s.013 2.822.062 3.922c.049 1.096.223 1.844.48 2.503.264.68.618 1.257 1.194 1.834.577.576 1.155.93 1.835 1.194.659.257 1.407.431 2.503.48 1.1.05 1.452.062 3.922.062s2.822-.013 3.922-.062c1.096-.049 1.844-.223 2.503-.48.68-.264 1.257-.618 1.834-1.194.576-.577.93-1.155 1.194-1.835.257-.659.431-1.407.48-2.503.05-1.1.062-1.452.062-3.922s-.013-2.822-.062-3.922c-.049-1.096-.223-1.844-.48-2.503-.264-.68-.618-1.257-1.194-1.834-.577-.576-1.155-.93-1.835-1.194-.659-.257-1.407-.431-2.503-.48-1.1-.05-1.452-.062-3.922-.062zM12.315 6a6 6 0 1 0 0 12 6 6 0 0 0 0-12zM12.315 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM18.406 3.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Collections Column -->
+                    <div class="lg:pl-8">
+                        <h4 class="text-white font-black uppercase tracking-widest text-xs mb-8">Collections</h4>
+                        <ul class="space-y-4">
+                            <li><a href="{% url 'catalog:product_list' %}" class="text-gray-400 hover:text-african-gold transition-colors font-medium">All Products</a></li>
+                            <li><a href="{% url 'catalog:category_list' %}" class="text-gray-400 hover:text-african-gold transition-colors font-medium">Categories</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-african-gold transition-colors font-medium">Featured Merchants</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-african-gold transition-colors font-medium">New Arrivals</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Company Column -->
+                    <div>
+                        <h4 class="text-white font-black uppercase tracking-widest text-xs mb-8">Company</h4>
+                        <ul class="space-y-4">
+                            <li><a href="#" class="text-gray-400 hover:text-african-gold transition-colors font-medium">About Us</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-african-gold transition-colors font-medium">Merchant Program</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-african-gold transition-colors font-medium">Privacy Policy</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-african-gold transition-colors font-medium">Terms of Service</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Support Column -->
+                    <div>
+                        <h4 class="text-white font-black uppercase tracking-widest text-xs mb-8">Support</h4>
+                        <ul class="space-y-4">
+                            <li><a href="#" class="text-gray-400 hover:text-african-gold transition-colors font-medium">Help Center</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-african-gold transition-colors font-medium">Delivery Tracking</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-african-gold transition-colors font-medium">Contact Us</a></li>
+                            <li class="pt-4 flex items-center gap-3">
+                                <div class="h-10 w-10 rounded-full bg-african-orange/10 flex items-center justify-center text-african-orange">
+                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" stroke-width="2"/></svg>
+                                </div>
+                                <span class="text-white font-bold leading-tight">+1 (800) VENT-DLVR</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <p class="text-xs text-gray-500 font-bold uppercase tracking-widest">
+                        &copy; 2025 VentDelivr. Made with <span class="text-african-orange">&hearts;</span> for Africa.
+                    </p>
+                    <div class="flex items-center gap-6">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" class="h-4 opacity-30 invert" alt="Visa">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" class="h-6 opacity-30 invert" alt="Mastercard">
+                    </div>
+                </div>
+            </div>
+        </footer>
     </div>
     {% block extra_scripts %}{% endblock %}
 </body>
