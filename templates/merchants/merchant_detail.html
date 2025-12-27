@@ -12,36 +12,102 @@
   <main class="-mt-32 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
       <!-- Products by Category -->
       {% for category in categories %}
-      <div class="bg-white rounded-lg shadow mt-8 p-6">
-          <h2 class="text-2xl font-bold tracking-tight text-gray-900 border-b pb-4 mb-6">{{ category.name }}</h2>
-          <div class="grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-              {% for product in merchant.products.all %}
-                {% if product.category == category %}
-                  <div class="group relative">
-                      <div class="min-h-80 aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200 group-hover:opacity-75 lg:aspect-none lg:h-80">
-                          {% if product.image %}
-                          <img src="{{ product.image.url }}" alt="{{ product.name }}" class="h-full w-full object-cover object-center lg:h-full lg:w-full">
-                          {% else %}
-                          <div class="h-full w-full flex items-center justify-center bg-gray-100 text-gray-500">No Image</div>
-                          {% endif %}
-                      </div>
-                      <div class="mt-4 flex justify-between">
-                          <div>
-                              <h3 class="text-sm text-gray-700">
-                                  <a href="{% url 'catalog:product_detail' product.slug %}">
-                                      <span aria-hidden="true" class="absolute inset-0"></span>
-                                      {{ product.name }}
-                                  </a>
-                              </h3>
-                          </div>
-                          <p class="text-sm font-medium text-gray-900">${{ product.price }}</p>
-                      </div>
-                  </div>
-                {% endif %}
-              {% endfor %}
-          </div>
-      </div>
-      {% endfor %}
-  </main>
+<div class="min-h-screen bg-white">
+    <!-- Merchant Hero -->
+    <div class="relative h-64 sm:h-80 md:h-96 overflow-hidden">
+        <div class="absolute inset-0 bg-african-green">
+            {% if merchant.logo %}
+                <img src="{{ merchant.logo.url }}" class="w-full h-full object-cover blur-sm opacity-30 shadow-inner" alt="{{ merchant.store_name }} Banner">
+            {% endif %}
+            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-african-green/40 to-african-green"></div>
+        </div>
+        <div class="relative h-full mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col justify-end pb-10">
+            <div class="flex flex-col md:flex-row md:items-end gap-6">
+                <div class="h-24 w-24 sm:h-32 sm:w-32 rounded-3xl bg-white p-1 shadow-2xl border-4 border-white/20 transform -rotate-2">
+                    {% if merchant.logo %}
+                        <img src="{{ merchant.logo.url }}" class="h-full w-full object-contain rounded-2xl" alt="{{ merchant.store_name }} Logo">
+                    {% else %}
+                        <div class="h-full w-full flex items-center justify-center bg-gray-50 rounded-2xl text-african-green text-3xl font-black">
+                            {{ merchant.store_name|first }}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="flex-1">
+                    <h1 class="text-4xl sm:text-5xl font-black text-white tracking-tighter mb-2">{{ merchant.store_name }}</h1>
+                    <div class="flex flex-wrap items-center gap-4 text-white/80 text-sm font-medium">
+                        <span class="flex items-center gap-1">
+                            <svg class="w-4 h-4 text-african-gold" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            Verified Seller
+                        </span>
+                        <span>•</span>
+                        <span>{{ products|length }} Products</span>
+                        {% if merchant.location %}
+                            <span>•</span>
+                            <span class="flex items-center gap-1">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke-width="2"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke-width="2"/></svg>
+                                {{ merchant.address|truncatechars:30 }}
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="hidden lg:block">
+                    <button class="px-8 py-3 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 rounded-2xl text-white font-bold transition-all">
+                        Follow Store
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Store Navigation & Content -->
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+        <div class="flex items-center justify-between mb-10 border-b border-gray-100 pb-6">
+            <h2 class="text-2xl font-black text-african-green">Full <span class="text-african-orange">Collection</span></h2>
+            <div class="flex items-center gap-2">
+                <span class="text-sm font-bold text-gray-400 mr-2">Sort by:</span>
+                <select class="text-sm font-black text-african-green border-none bg-gray-50 rounded-xl focus:ring-0">
+                    <option>Latest Arrivals</option>
+                    <option>Price: Low to High</option>
+                    <option>Price: High to Low</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {% for product in products %}
+            <div class="group relative bg-white rounded-3xl border border-gray-100 hover:border-african-orange/20 hover:shadow-2xl hover:shadow-african-orange/5 transition-all duration-500 overflow-hidden">
+                <div class="relative h-64 overflow-hidden">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" class="h-full w-full object-cover transform group-hover:scale-110 transition-transform duration-700" alt="{{ product.name }}">
+                    {% endif %}
+                    <div class="absolute top-4 right-4 animate-pulse">
+                        <span class="px-3 py-1 bg-white ring-1 ring-african-green/10 rounded-full text-[10px] font-black uppercase text-african-green shadow-xl tracking-widest italic">In Stock</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <p class="text-[10px] font-black text-african-orange uppercase tracking-widest mb-1">{{ product.category.name|default:"General" }}</p>
+                    <h3 class="text-lg font-black text-african-green mb-4 leading-tight group-hover:text-african-orange transition-colors">
+                        <a href="{% url 'catalog:product_detail' product.id %}">
+                            <span class="absolute inset-0"></span>
+                            {{ product.name }}
+                        </a>
+                    </h3>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xl font-black text-african-green">${{ product.price }}</span>
+                        <div class="flex items-center gap-1 text-african-gold">
+                            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <span class="text-xs font-black">4.9</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full py-20 text-center">
+                <p class="text-gray-400 font-medium italic">This merchant hasn't listed any products yet.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
 </div>
 {% endblock %}

@@ -1,21 +1,57 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-    <div class="md:grid md:grid-cols-3 md:gap-6">
-        <div class="md:col-span-1">
-            <h3 class="text-lg font-medium leading-6 text-gray-900">Product Information</h3>
-            <p class="mt-1 text-sm text-gray-500">Add details about your product.</p>
+<div class="min-h-screen bg-gray-50/50 py-10">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+        
+        <!-- Header -->
+        <div class="mb-10 text-center">
+            <nav class="flex justify-center mb-4" aria-label="Breadcrumb">
+                <ol class="flex items-center space-x-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    <li><a href="{% url 'merchants:dashboard' %}" class="hover:text-african-orange">Dashboard</a></li>
+                    <li class="flex items-center gap-2">
+                        <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20"><path d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"/></svg>
+                        <span class="text-african-green">Product Form</span>
+                    </li>
+                </ol>
+            </nav>
+            <h2 class="text-3xl font-black text-african-green tracking-tight">
+                {% if form.instance.pk %}Edit <span class="text-african-orange">Product</span>{% else %}Add <span class="text-african-orange">New Product</span>{% endif %}
+            </h2>
+            <p class="mt-2 text-base text-gray-400 font-medium">
+                Fill in the details below to update your catalog
+            </p>
         </div>
-        <div class="mt-5 md:col-span-2 md:mt-0">
-            <form action="" method="POST" enctype="multipart/form-data">
+
+        <div class="bg-white rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden">
+            <form method="post" enctype="multipart/form-data" class="p-8 sm:p-12 space-y-8">
                 {% csrf_token %}
-                <div class="shadow sm:overflow-hidden sm:rounded-md">
-                    <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
-                        {{ form.as_p }}
+                
+                <div class="grid grid-cols-1 gap-y-8">
+                    {% for field in form %}
+                    <div class="space-y-2">
+                        <label for="{{ field.id_for_label }}" class="block text-sm font-black text-african-green uppercase tracking-widest">
+                            {{ field.label }}
+                        </label>
+                        <div class="relative">
+                            {{ field }}
+                        </div>
+                        {% if field.help_text %}
+                        <p class="text-[11px] text-gray-400 italic">{{ field.help_text|safe }}</p>
+                        {% endif %}
+                        {% for error in field.errors %}
+                        <p class="text-xs text-red-600 font-bold">{{ error }}</p>
+                        {% endfor %}
                     </div>
-                    <div class="bg-gray-50 px-4 py-3 text-right sm:px-6">
-                        <button type="submit" class="inline-flex justify-center rounded-md border border-transparent bg-african-orange py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Save</button>
-                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="pt-8 border-t border-gray-50 flex flex-col sm:flex-row gap-4">
+                    <button type="submit" class="flex-1 inline-flex items-center justify-center px-8 py-4 border border-transparent text-base font-black rounded-2xl shadow-lg shadow-orange-200 text-white bg-african-orange hover:bg-orange-600 transition-all transform hover:-translate-y-0.5">
+                        {% if form.instance.pk %}Save Changes{% else %}Publish Product{% endif %}
+                    </button>
+                    <a href="{% url 'merchants:product_list' %}" class="inline-flex items-center justify-center px-8 py-4 border-2 border-gray-100 text-base font-bold rounded-2xl text-gray-400 hover:bg-gray-50 hover:text-gray-600 transition-all">
+                        Cancel
+                    </a>
                 </div>
             </form>
         </div>

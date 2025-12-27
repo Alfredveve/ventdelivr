@@ -1,52 +1,132 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-  <div class="sm:flex sm:items-center">
-    <div class="sm:flex-auto">
-      <h1 class="text-xl font-semibold text-gray-900">Products</h1>
-      <p class="mt-2 text-sm text-gray-700">A list of all the products in your store including their title, price, and stock status.</p>
-    </div>
-    <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-      <a href="{% url 'merchants:product_create' %}" class="block rounded-md bg-african-orange px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-orange-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-african-orange">Add Product</a>
-    </div>
-  </div>
-  <div class="mt-8 flex flex-col">
-    <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-      <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-        <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-          <table class="min-w-full divide-y divide-gray-300">
-            <thead class="bg-gray-50">
-              <tr>
-                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Name</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Category</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Price</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Stock</th>
-                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                  <span class="sr-only">Edit</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200 bg-white">
-              {% for product in products %}
-              <tr>
-                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">{{ product.name }}</td>
-                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ product.category.name }}</td>
-                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${{ product.price }}</td>
-                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ product.inventory.quantity }}</td>
-                <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                  <a href="{% url 'merchants:product_update' product.slug %}" class="text-african-orange hover:text-orange-900">Edit</a>
-                </td>
-              </tr>
-              {% empty %}
-               <tr>
-                <td colspan="5" class="px-3 py-4 text-sm text-center text-gray-500">No products found. Start adding some!</td>
-               </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+<div class="min-h-screen bg-gray-50/50 py-10">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        
+        <!-- Header -->
+        <div class="md:flex md:items-end md:justify-between mb-10 gap-6">
+            <div class="min-w-0 flex-1">
+                <nav class="flex mb-2" aria-label="Breadcrumb">
+                    <ol class="flex items-center space-x-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                        <li><a href="{% url 'merchants:dashboard' %}" class="hover:text-african-orange">Dashboard</a></li>
+                        <li class="flex items-center gap-2">
+                            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20"><path d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"/></svg>
+                            <span class="text-african-green">Inventory</span>
+                        </li>
+                    </ol>
+                </nav>
+                <h2 class="text-3xl font-black text-african-green sm:text-4xl tracking-tight">
+                    Manage <span class="text-african-orange">Inventory</span>
+                </h2>
+                <p class="mt-2 text-base text-gray-500 font-medium">
+                    You have {{ products|length }} products in your catalog
+                </p>
+            </div>
+            <div class="mt-6 flex flex-shrink-0 md:mt-0">
+                <a href="{% url 'merchants:product_create' %}" class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-black rounded-xl shadow-lg shadow-orange-200 text-white bg-african-orange hover:bg-orange-600 transition-all transform hover:-translate-y-0.5">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-width="2.5"/></svg>
+                    Add New Product
+                </a>
+            </div>
         </div>
-      </div>
+
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <!-- Desktop View -->
+            <div class="hidden md:block overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-100">
+                    <thead class="bg-gray-50/50">
+                        <tr>
+                            <th scope="col" class="px-6 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Product</th>
+                            <th scope="col" class="px-6 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Category</th>
+                            <th scope="col" class="px-6 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Price</th>
+                            <th scope="col" class="px-6 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Stock</th>
+                            <th scope="col" class="px-6 py-4 text-right text-[10px] font-black text-gray-400 uppercase tracking-widest">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50">
+                        {% for product in products %}
+                        <tr class="hover:bg-gray-50/50 transition-colors">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center gap-4">
+                                    <div class="h-14 w-14 flex-shrink-0 rounded-2xl bg-gray-100 overflow-hidden border border-gray-100">
+                                        {% if product.image %}
+                                            <img src="{{ product.image.url }}" class="h-full w-full object-cover">
+                                        {% else %}
+                                            <div class="h-full w-full flex items-center justify-center text-gray-300">
+                                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-width="2"/></svg>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-black text-african-green">{{ product.name }}</div>
+                                        <div class="text-[10px] font-bold text-gray-400 tracking-tight">ID: #{{ product.id }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-orange-50 text-african-orange">
+                                    {{ product.category.name|default:"General" }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-black text-african-green">${{ product.price }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-24 h-2 bg-gray-100 rounded-full overflow-hidden">
+                                        <div class="h-full {% if product.inventory.quantity > 10 %}bg-african-green{% else %}bg-african-orange{% endif %}" style="width: {% if product.inventory.quantity > 100 %}100{% else %}{{ product.inventory.quantity }}{% endif %}%"></div>
+                                    </div>
+                                    <span class="text-xs font-bold text-gray-600">{{ product.inventory.quantity }}</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <div class="flex justify-end gap-2">
+                                    <a href="{% url 'merchants:product_update' product.id %}" class="p-2 rounded-xl bg-gray-50 text-african-green hover:bg-african-green hover:text-white transition-all border border-gray-100">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" stroke-width="2"/></svg>
+                                    </a>
+                                    <a href="#" class="p-2 rounded-xl bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all border border-red-100">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-width="2"/></svg>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Mobile View -->
+            <div class="md:hidden divide-y divide-gray-50">
+                {% for product in products %}
+                <div class="p-6">
+                    <div class="flex gap-4 mb-4">
+                        <div class="h-20 w-20 flex-shrink-0 rounded-2xl bg-gray-100 overflow-hidden border border-gray-100">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" class="h-full w-full object-cover">
+                            {% endif %}
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-lg font-black text-african-green">{{ product.name }}</div>
+                            <div class="mt-1 flex items-center gap-2">
+                                <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-orange-50 text-african-orange">{{ product.category.name|default:"General" }}</span>
+                                <span class="text-sm font-black text-african-green">${{ product.price }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="text-xs font-bold text-gray-500">Stock: <span class="text-african-green">{{ product.inventory.quantity }} units</span></div>
+                        <div class="flex gap-2">
+                            <a href="{% url 'merchants:product_update' product.id %}" class="px-4 py-2 rounded-xl bg-gray-50 text-african-green font-bold text-xs border border-gray-100">Edit</a>
+                            <a href="#" class="px-4 py-2 rounded-xl bg-red-50 text-red-600 font-bold text-xs border border-red-100">Delete</a>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="py-20 text-center px-6">
+                    <p class="text-gray-400 font-medium italic">No products in your catalog yet.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
-  </div>
-</div>
-{% endblock %}
+</div>{% endblock %}

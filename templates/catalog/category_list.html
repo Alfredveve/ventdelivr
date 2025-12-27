@@ -3,71 +3,71 @@
 {% block title %}Categories - VentDelivr{% endblock %}
 
 {% block content %}
-<div class="px-4 sm:px-6 lg:px-8">
+<div class="min-h-screen bg-white py-12 px-4 sm:px-6 lg:px-8">
     <!-- Header -->
-    <div class="mb-12 text-center">
-        <h1 class="text-5xl font-bold text-gray-900 mb-4">Shop by Category</h1>
-        <p class="text-xl text-gray-600">Discover authentic African products organized by category</p>
+    <div class="max-w-4xl mx-auto mb-20 text-center">
+        <h1 class="text-4xl sm:text-6xl font-black text-african-green mb-6 tracking-tight">
+            Shop by <span class="text-african-orange">Category</span>
+        </h1>
+        <p class="text-lg sm:text-xl text-gray-500 font-medium leading-relaxed">
+            Discover the rich diversity of authentic African products, handpicked from the finest merchants and delivered straight to you.
+        </p>
     </div>
 
     <!-- Categories Grid -->
     {% if categories %}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
         {% for category in categories %}
         <a href="{% url 'catalog:category_detail' category.slug %}" 
-           class="group relative bg-gradient-to-br from-african-green to-african-green/80 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+           class="group relative aspect-[4/5] rounded-[2.5rem] overflow-hidden shadow-xl hover:shadow-african-orange/20 transition-all duration-700 bg-gray-100">
             
-            <!-- Background Pattern -->
-            <div class="absolute inset-0 opacity-10">
-                <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cg fill=&quot;none&quot; fill-rule=&quot;evenodd&quot;%3E%3Cg fill=&quot;%23ffffff&quot; fill-opacity=&quot;0.4&quot;%3E%3Cpath d=&quot;M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z&quot;/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+            {% if category.image %}
+            <img src="{{ category.image.url }}" 
+                 alt="{{ category.name }}" 
+                 class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000">
+            {% else %}
+            <div class="absolute inset-0 bg-gradient-to-br from-african-green to-green-900 flex items-center justify-center p-12">
+                <svg class="w-24 h-24 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                </svg>
             </div>
+            {% endif %}
             
-            <!-- Category Image -->
-            <div class="relative h-48 overflow-hidden">
-                {% if category.image %}
-                <img src="{{ category.image.url }}" 
-                     alt="{{ category.name }}" 
-                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                {% else %}
-                <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-african-gold/20 to-african-orange/20">
-                    <svg class="w-20 h-20 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-                    </svg>
-                </div>
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                {% endif %}
-            </div>
+            <!-- Overlay -->
+            <div class="absolute inset-0 bg-gradient-to-t from-african-green via-african-green/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500"></div>
             
-            <!-- Category Info -->
-            <div class="relative p-6">
-                <h3 class="text-2xl font-bold text-white mb-2 group-hover:text-african-gold transition-colors">
+            <!-- Content -->
+            <div class="absolute inset-0 p-8 flex flex-col justify-end transform transition-transform duration-500 group-hover:-translate-y-2">
+                <h3 class="text-2xl font-black text-white mb-2 leading-tight tracking-tight">
                     {{ category.name }}
                 </h3>
                 
-                <div class="flex items-center justify-between">
-                    <p class="text-gray-200 text-sm">
-                        {{ category.products.count }} product{{ category.products.count|pluralize }}
+                <div class="flex items-center justify-between mt-2 overflow-hidden max-h-0 group-hover:max-h-20 transition-all duration-700 delay-100">
+                    <p class="text-white/80 text-sm font-bold uppercase tracking-widest">
+                        {{ category.products.count }} Product{{ category.products.count|pluralize }}
                     </p>
-                    
-                    <div class="flex items-center gap-2 text-african-gold group-hover:gap-3 transition-all">
-                        <span class="text-sm font-semibold">Explore</span>
-                        <svg class="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    <div class="h-10 w-10 rounded-full bg-white flex items-center justify-center text-african-green shadow-xl">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path>
                         </svg>
                     </div>
                 </div>
+                
+                <!-- Progress Indicator (Just for effect) -->
+                <div class="mt-4 h-1 w-0 bg-african-gold group-hover:w-full transition-all duration-1000 rounded-full"></div>
             </div>
         </a>
         {% endfor %}
     </div>
     {% else %}
-    <div class="text-center py-16">
-        <svg class="mx-auto h-24 w-24 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-        </svg>
-        <h3 class="text-xl font-semibold text-gray-900 mb-2">No categories available</h3>
-        <p class="text-gray-600">Categories will appear here once they are created.</p>
+    <div class="text-center py-32 bg-gray-50 rounded-[3rem] border-2 border-dashed border-gray-200">
+        <div class="h-24 w-24 bg-white rounded-3xl shadow-lg flex items-center justify-center mx-auto mb-6">
+            <svg class="h-12 w-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+            </svg>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-900 mb-2">No categories yet</h3>
+        <p class="text-gray-500 font-medium">Be the first to explore when our collections go live.</p>
     </div>
     {% endif %}
 </div>
